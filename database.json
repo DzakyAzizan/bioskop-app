@@ -10,16 +10,6 @@
       "password": "123",
       "role": "user"
     },
-    {
-      "username": "user123",
-      "password": "user123",
-      "role": "user"
-    },
-    {
-      "username": "paljok",
-      "password": "paljok",
-      "role": "user"
-    }
   ],
   "bookings": [],
   "seats": [
