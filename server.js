@@ -21,6 +21,11 @@ const writeDB = (data) => {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 };
 
+// Tambahkan ini agar halaman awal otomatis buka login.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "login.html"));
+});
+
 // 1. Ambil Kursi (Berdasarkan movie_id & showtime)
 app.get("/api/seats/:movieId/:showtime", (req, res) => {
   const { movieId, showtime } = req.params;
@@ -116,3 +121,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on: http://localhost:${PORT}`);
 });
+
