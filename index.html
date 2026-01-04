@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema Tix - Final</title>
+    <title>Cinema Tix - Fixed Print</title>
     <style>
         :root { --primary: #e50914; --bg: #0b0b0b; --card: #161616; --text: #fff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
         .container { max-width: 500px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
         .selection-group { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -16,29 +16,51 @@
         .seat.occupied { background: #1a1a1a; color: #333; cursor: not-allowed; }
         .seat.selected { background: var(--primary); color: white; }
         .btn-confirm { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #ticket-controls { display: none; margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; text-align: center; border: 1px solid #333; }
-        .btn-print { background: #28a745; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 5px; width: 100%; margin-bottom: 10px; font-weight: bold; }
+        #ticket-controls { display: none; margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; text-align: center; }
+        .btn-print { background: #28a745; color: white; border: none; padding: 15px; cursor: pointer; border-radius: 5px; width: 100%; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        
+        /* Tampilan Tiket di Layar */
         .ticket { background: white; color: black; padding: 20px; border-radius: 10px; border: 2px dashed #000; margin-bottom: 20px; position: relative; }
         .ticket-checkbox { position: absolute; top: 15px; right: 15px; transform: scale(1.5); }
         .ticket h2 { color: #e50914; text-align: center; margin: 0 0 10px 0; border-bottom: 2px solid #eee; }
         .ticket-info div { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 5px 0; }
 
-        /* PERBAIKAN PRINT HP & LAPTOP */
+        /* PERBAIKAN CETAK HP (SOLUSI LAYAR KOSONG) */
         @media print {
-            @page { margin: 0; }
-            body { background: white !important; color: black !important; padding: 0; margin: 0; }
-            /* Sembunyikan semua kecuali tiket yang dipilih */
-            body > *:not(#ticket-container) { display: none !important; }
-            #ticket-container { display: block !important; width: 100% !important; padding: 20px; }
-            .ticket { display: none !important; }
-            .ticket.to-print { 
+            /* Sembunyikan SEMUA elemen tanpa terkecuali */
+            body * { display: none !important; }
+            
+            /* Tampilkan kembali hanya container tiket dan isinya */
+            #ticket-container, #ticket-container * { 
                 display: block !important; 
-                page-break-inside: avoid !important; 
-                margin: 0 auto 40px auto !important; 
-                width: 85% !important;
-                border: 2px solid #000 !important;
+                visibility: visible !important; 
             }
-            .ticket-checkbox, button { display: none !important; }
+
+            #ticket-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100% !important;
+                background: white !important;
+            }
+
+            /* Sembunyikan tiket yang TIDAK dicentang */
+            .ticket { display: none !important; }
+            
+            /* Tampilkan tiket yang dipilih dengan rapi */
+            .ticket.to-print { 
+                display: block !important;
+                width: 90% !important;
+                margin: 0 auto 50px auto !important; 
+                border: 2px solid #000 !important;
+                page-break-inside: avoid !important;
+                padding: 20px !important;
+            }
+
+            /* Sembunyikan checkbox saat diprint */
+            .ticket-checkbox { display: none !important; }
+            
+            body { background: white !important; }
         }
     </style>
 </head>
@@ -59,10 +81,12 @@
         </div>
         <div id="seat-container" class="grid-seats"></div>
         <button class="btn-confirm" onclick="confirmBooking()">KONFIRMASI PESANAN</button>
+        
         <div id="ticket-controls">
             <button class="btn-print" onclick="printSelected()">CETAK TIKET TERPILIH (PDF)</button>
-            <button onclick="clearHistory()" style="width:100%; font-size:11px;">Hapus Riwayat</button>
+            <button onclick="clearHistory()" style="width:100%; border:none; background:none; color:#888; cursor:pointer;">Hapus Riwayat</button>
         </div>
+
         <div id="ticket-container"></div>
     </div>
 
@@ -101,19 +125,31 @@
                 body: JSON.stringify({ movieId: m, seatIds: sel, userName: user, showtime: s })
             });
             if (res.ok) {
-                const data = { movie: document.getElementById("movie-select").options[document.getElementById("movie-select").selectedIndex].text, time: s, seats: sel.join(", "), id: Math.random().toString(36).substr(2, 7).toUpperCase() };
+                const data = { 
+                    movie: document.getElementById("movie-select").options[document.getElementById("movie-select").selectedIndex].text, 
+                    time: s, seats: sel.join(", "), id: Math.random().toString(36).substr(2, 7).toUpperCase() 
+                };
                 saveHistory(data);
                 renderTicket(data);
                 loadSeats();
                 document.getElementById("ticket-controls").style.display = "block";
-                alert("Berhasil!");
+                alert("Berhasil dipesan!");
             }
         }
 
         function renderTicket(data) {
             const t = document.createElement("div");
             t.className = "ticket";
-            t.innerHTML = `<input type="checkbox" class="ticket-checkbox" checked><h2>CINEMA TIX</h2><div class="ticket-info"><div><strong>Film:</strong><span>${data.movie}</span></div><div><strong>Jam:</strong><span>${data.time}</span></div><div><strong>Kursi:</strong><span>${data.seats}</span></div></div><div style="text-align:center;font-size:10px;margin-top:10px;">ID: ${data.id}</div>`;
+            t.innerHTML = `
+                <input type="checkbox" class="ticket-checkbox" checked>
+                <h2>CINEMA TIX</h2>
+                <div class="ticket-info">
+                    <div><strong>Film:</strong><span>${data.movie}</span></div>
+                    <div><strong>Jam:</strong><span>${data.time}</span></div>
+                    <div><strong>Kursi:</strong><span>${data.seats}</span></div>
+                </div>
+                <div style="text-align:center;font-size:10px;margin-top:10px;border-top:1px solid #eee;padding-top:5px;">ID: ${data.id}</div>
+            `;
             document.getElementById("ticket-container").prepend(t);
         }
 
@@ -125,21 +161,26 @@
 
         function printSelected() {
             const tickets = document.querySelectorAll(".ticket");
-            let any = false;
+            let count = 0;
             tickets.forEach(t => {
-                if (t.querySelector(".ticket-checkbox").checked) { t.classList.add("to-print"); any = true; }
-                else { t.classList.remove("to-print"); }
+                if (t.querySelector(".ticket-checkbox").checked) { 
+                    t.classList.add("to-print"); 
+                    count++; 
+                } else { 
+                    t.classList.remove("to-print"); 
+                }
             });
-            if (!any) return alert("Centang tiket dulu!");
+            if (count === 0) return alert("Pilih tiket dulu!");
             window.print();
         }
 
-        function clearHistory() { if (confirm("Hapus?")) { localStorage.removeItem(`hist_${user}`); location.reload(); } }
+        function clearHistory() { if (confirm("Hapus semua riwayat tiket?")) { localStorage.removeItem(`hist_${user}`); location.reload(); } }
         function logout() { localStorage.clear(); window.location.href = "login.html"; }
 
         loadSeats();
-        (JSON.parse(localStorage.getItem(`hist_${user}`)) || []).forEach(renderTicket);
-        if ((JSON.parse(localStorage.getItem(`hist_${user}`)) || []).length > 0) document.getElementById("ticket-controls").style.display = "block";
+        const saved = JSON.parse(localStorage.getItem(`hist_${user}`)) || [];
+        saved.forEach(renderTicket);
+        if (saved.length > 0) document.getElementById("ticket-controls").style.display = "block";
     </script>
 </body>
 </html>
