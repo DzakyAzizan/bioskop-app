@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema Tix - Save Image</title>
+    <title>Cinema Tix - Download Selected</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --primary: #e50914; --bg: #0b0b0b; --card: #161616; --text: #fff; }
@@ -24,6 +24,7 @@
         /* Tampilan Tiket */
         .ticket { background: white; color: black; padding: 20px; border-radius: 10px; border: 2px dashed #000; margin-bottom: 20px; position: relative; width: 280px; margin-left: auto; margin-right: auto; }
         .ticket h2 { color: #e50914; text-align: center; margin: 0 0 10px 0; border-bottom: 1px solid #eee; }
+        .ticket-checkbox { position: absolute; top: 15px; right: 15px; transform: scale(1.5); cursor: pointer; }
         .ticket-info div { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 5px 0; font-size: 14px; }
     </style>
 </head>
@@ -46,8 +47,8 @@
         <button class="btn-confirm" onclick="confirmBooking()">KONFIRMASI PESANAN</button>
         
         <div id="ticket-controls">
-            <p style="font-size: 12px; color: #aaa;">Klik tombol di bawah untuk simpan tiket ke Galeri HP</p>
-            <button class="btn-download" onclick="downloadAllTickets()">DOWNLOAD SEMUA TIKET (GAMBAR)</button>
+            <p style="font-size: 12px; color: #aaa;">Centang tiket di bawah, lalu klik download</p>
+            <button class="btn-download" onclick="downloadSelectedTickets()">DOWNLOAD TIKET TERPILIH</button>
             <button onclick="clearHistory()" style="width:100%; border:none; background:none; color:#888; padding:10px;">Hapus Riwayat</button>
         </div>
 
@@ -83,13 +84,11 @@
             if (sel.length === 0) return alert("Pilih kursi!");
             const m = document.getElementById("movie-select").value;
             const s = document.getElementById("showtime-select").value;
-            
             const res = await fetch("/api/book-seat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ movieId: m, seatIds: sel, userName: user, showtime: s })
             });
-
             if (res.ok) {
                 const data = { 
                     movie: document.getElementById("movie-select").options[document.getElementById("movie-select").selectedIndex].text, 
@@ -108,9 +107,9 @@
         function renderTicket(data) {
             const t = document.createElement("div");
             t.className = "ticket";
-            // Beri ID unik agar bisa ditangkap oleh html2canvas
             t.id = "tkt-" + data.id;
             t.innerHTML = `
+                <input type="checkbox" class="ticket-checkbox" checked>
                 <h2>CINEMA TIX</h2>
                 <div class="ticket-info">
                     <div><strong>Film:</strong><span>${data.movie}</span></div>
@@ -122,20 +121,29 @@
             document.getElementById("ticket-container").prepend(t);
         }
 
-        // FUNGSI DOWNLOAD: Mengubah Tiket jadi Gambar JPG/PNG
-        async function downloadAllTickets() {
+        async function downloadSelectedTickets() {
             const tickets = document.querySelectorAll(".ticket");
-            if (tickets.length === 0) return alert("Tidak ada tiket!");
-            
-            alert("Sedang memproses... Tunggu sebentar.");
+            let count = 0;
             
             for (let t of tickets) {
-                const canvas = await html2canvas(t, { scale: 2 });
-                const link = document.createElement("a");
-                link.download = `tiket-${user}-${Math.floor(Math.random()*1000)}.png`;
-                link.href = canvas.toDataURL("image/png");
-                link.click();
+                const checkbox = t.querySelector(".ticket-checkbox");
+                if (checkbox && checkbox.checked) {
+                    // Sembunyikan checkbox sementara agar tidak ikut difoto
+                    checkbox.style.display = "none";
+                    
+                    const canvas = await html2canvas(t, { scale: 2 });
+                    const link = document.createElement("a");
+                    link.download = `tiket-${user}-${t.id}.png`;
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+                    
+                    // Munculkan kembali checkbox
+                    checkbox.style.display = "block";
+                    count++;
+                }
             }
+            if (count === 0) alert("Silakan centang tiket yang ingin di-download!");
+            else alert(`${count} Tiket berhasil diproses.`);
         }
 
         function clearHistory() { if (confirm("Hapus?")) { localStorage.removeItem(`hist_${user}`); location.reload(); } }
