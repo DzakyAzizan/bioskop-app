@@ -16,8 +16,11 @@
       "dest": "server.js"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "login.html"
+      "dest": "index.html"
     }
   ]
 }
