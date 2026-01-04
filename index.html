@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cinema Tix - Booking History</title>
+    <title>Cinema Tix - Booking</title>
     <style>
       :root {
         --primary: #e50914;
@@ -23,7 +23,7 @@
         margin: auto;
       }
 
-      /* Header & Selections */
+      /* Header */
       .header {
         display: flex;
         justify-content: space-between;
@@ -38,6 +38,8 @@
         color: var(--primary);
         font-weight: bold;
       }
+
+      /* Selections */
       .selection-group {
         display: flex;
         justify-content: space-between;
@@ -90,6 +92,15 @@
         cursor: pointer;
         margin-bottom: 10px;
       }
+      #ticket-controls {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background: #222;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid #333;
+      }
       .btn-print-selected {
         background: #28a745;
         color: white;
@@ -99,9 +110,9 @@
         border-radius: 5px;
         font-weight: bold;
         width: 100%;
+        margin-bottom: 10px;
       }
       .btn-clear {
-        margin-top: 10px;
         background: #444;
         color: white;
         border: none;
@@ -112,20 +123,7 @@
         font-size: 12px;
       }
 
-      #ticket-controls {
-        display: none;
-        margin-top: 20px;
-        padding: 15px;
-        background: #222;
-        border-radius: 8px;
-        text-align: center;
-        border: 1px solid #333;
-      }
-
-      /* Tiket Styling */
-      #ticket-container {
-        margin-top: 20px;
-      }
+      /* Tiket Tampilan Layar */
       .ticket {
         background: white;
         color: black;
@@ -146,7 +144,7 @@
         border-bottom: 2px solid #eee;
         padding-bottom: 10px;
         margin-top: 0;
-        color: var(--primary);
+        color: #e50914;
         text-align: center;
       }
       .ticket-info div {
@@ -160,36 +158,32 @@
         margin-top: 10px;
         font-size: 10px;
         color: #666;
-        border-top: 1px dashed #ccc;
-        padding-top: 5px;
       }
 
-      /* Media Print - Menangani PDF Kosong */
+      /* MEDIA PRINT - Agar 1 Lembar muat 2-3 Tiket Rapi */
       @media print {
-        body * {
-          visibility: hidden;
-        }
-        #ticket-container,
-        #ticket-container * {
-          visibility: visible;
+        body { background: white !important; margin: 0; }
+        body * { visibility: hidden; }
+        #ticket-container, #ticket-container * { visibility: visible; }
+        #ticket-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
         }
         .ticket {
-          display: none !important;
+          display: none !important; /* Sembunyikan yang tidak dicentang */
         }
         .ticket.to-print {
           display: block !important;
-          position: relative;
-          margin: 20px auto;
-          width: 90%;
-          border: 2px solid #000;
-          page-break-after: always;
+          visibility: visible !important;
+          page-break-inside: avoid;
+          border: 2px solid #000 !important;
+          margin: 0 auto 40px auto !important; /* Spasi antar tiket */
+          width: 80%;
+          background: white !important;
         }
-        .ticket-checkbox,
-        button,
-        select,
-        .header,
-        .btn-confirm,
-        .btn-clear {
+        .ticket-checkbox, button, .header, .selection-group, .btn-confirm, #ticket-controls {
           display: none !important;
         }
       }
@@ -203,13 +197,13 @@
       </div>
 
       <div class="selection-group">
-        <select id="movie-select" title="Pilih Film" onchange="loadSeats()">
+        <select id="movie-select" onchange="loadSeats()">
           <option value="M1">Avengers</option>
           <option value="M2">Spider-Man</option>
           <option value="M3">The Batman</option>
           <option value="M4">Ant-Man</option>
         </select>
-        <select id="showtime-select" title="Pilih Jam Tayang" onchange="loadSeats()">
+        <select id="showtime-select" onchange="loadSeats()">
           <option value="14:00">14:00</option>
           <option value="17:00">17:00</option>
           <option value="22:00">22:00</option>
@@ -234,15 +228,6 @@
 
       const movieNames = { M1: "Avengers", M2: "Spider-Man", M3: "The Batman", M4: "Ant-Man" };
 
-      // Muat Riwayat dari LocalStorage saat refresh
-      function loadTicketHistory() {
-        const history = JSON.parse(localStorage.getItem(`history_${user}`)) || [];
-        if (history.length > 0) {
-          document.getElementById("ticket-controls").style.display = "block";
-          history.forEach((data) => renderTicket(data));
-        }
-      }
-
       async function loadSeats() {
         const m = document.getElementById("movie-select").value;
         const s = document.getElementById("showtime-select").value;
@@ -259,9 +244,7 @@
             div.dataset.id = seat.seat_id;
             container.appendChild(div);
           });
-        } catch (e) {
-          console.error("Gagal muat kursi", e);
-        }
+        } catch (e) { console.error(e); }
       }
 
       async function confirmBooking() {
@@ -271,11 +254,11 @@
 
         if (sel.length === 0) return alert("Pilih kursi!");
 
-      const res = await fetch("/api/book-seat", {
+        const res = await fetch("/api/book-seat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ movieId: m, seatIds: sel, userName: user, showtime: s }),
-      });
+        });
 
         if (res.ok) {
           const ticketData = {
@@ -284,8 +267,7 @@
             seats: sel.join(", "),
             id: Math.random().toString(36).substr(2, 9).toUpperCase(),
           };
-
-          // Simpan ke LocalStorage
+          
           const history = JSON.parse(localStorage.getItem(`history_${user}`)) || [];
           history.unshift(ticketData);
           localStorage.setItem(`history_${user}`, JSON.stringify(history));
@@ -293,6 +275,7 @@
           document.getElementById("ticket-controls").style.display = "block";
           renderTicket(ticketData);
           loadSeats();
+          alert("Booking Berhasil!");
         }
       }
 
@@ -301,15 +284,15 @@
         const t = document.createElement("div");
         t.className = "ticket";
         t.innerHTML = `
-                <input type="checkbox" class="ticket-checkbox" checked title="Pilih">
-                <h2>CINEMA TIX</h2>
-                <div class="ticket-info">
-                    <div><strong>Film:</strong> <span>${data.movie}</span></div>
-                    <div><strong>Jam:</strong> <span>${data.time}</span></div>
-                    <div><strong>Kursi:</strong> <span>${data.seats}</span></div>
-                </div>
-                <div class="ticket-footer">ID: ${data.id}</div>
-            `;
+            <input type="checkbox" class="ticket-checkbox" checked>
+            <h2>CINEMA TIX</h2>
+            <div class="ticket-info">
+                <div><strong>Film:</strong> <span>${data.movie}</span></div>
+                <div><strong>Jam:</strong> <span>${data.time}</span></div>
+                <div><strong>Kursi:</strong> <span>${data.seats}</span></div>
+            </div>
+            <div class="ticket-footer">ID: ${data.id}</div>
+        `;
         tBox.prepend(t);
       }
 
@@ -324,13 +307,13 @@
             t.classList.remove("to-print");
           }
         });
-        if (!any) return alert("Centang tiket!");
+        if (!any) return alert("Pilih tiket yang ingin dicetak!");
         window.print();
         all.forEach((t) => t.classList.remove("to-print"));
       }
 
       function clearHistory() {
-        if (confirm("Hapus riwayat tampilan tiket?")) {
+        if (confirm("Hapus riwayat tampilan?")) {
           localStorage.removeItem(`history_${user}`);
           document.getElementById("ticket-container").innerHTML = "";
           document.getElementById("ticket-controls").style.display = "none";
@@ -338,14 +321,17 @@
       }
 
       function logout() {
-        localStorage.removeItem("userName");
-        localStorage.removeItem("userRole");
+        localStorage.clear();
         window.location.href = "login.html";
       }
 
+      // Load awal
       loadSeats();
-      loadTicketHistory();
+      const history = JSON.parse(localStorage.getItem(`history_${user}`)) || [];
+      if (history.length > 0) {
+        document.getElementById("ticket-controls").style.display = "block";
+        history.forEach(renderTicket);
+      }
     </script>
   </body>
 </html>
-
