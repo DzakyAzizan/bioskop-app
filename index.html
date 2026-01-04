@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema Tix - Professional Print</title>
+    <title>Cinema Tix - Save Image</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --primary: #e50914; --bg: #0b0b0b; --card: #161616; --text: #fff; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
@@ -16,18 +17,18 @@
         .seat.occupied { background: #1a1a1a; color: #333; cursor: not-allowed; }
         .seat.selected { background: var(--primary); color: white; }
         .btn-confirm { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #ticket-controls { display: none; margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; text-align: center; }
-        .btn-print { background: #28a745; color: white; border: none; padding: 15px; cursor: pointer; border-radius: 5px; width: 100%; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
         
-        /* Tampilan Tiket di Layar */
-        .ticket { background: white; color: black; padding: 15px; border-radius: 8px; border: 2px dashed #000; margin-bottom: 15px; position: relative; }
-        .ticket-checkbox { position: absolute; top: 15px; right: 15px; transform: scale(1.4); }
-        .ticket h2 { color: #e50914; text-align: center; margin: 0 0 10px 0; font-size: 18px; border-bottom: 1px solid #eee; }
-        .ticket-info div { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 4px 0; font-size: 14px; }
+        #ticket-controls { display: none; margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; text-align: center; }
+        .btn-download { background: #28a745; color: white; border: none; padding: 15px; cursor: pointer; border-radius: 5px; width: 100%; font-weight: bold; margin-bottom: 10px; }
+        
+        /* Tampilan Tiket */
+        .ticket { background: white; color: black; padding: 20px; border-radius: 10px; border: 2px dashed #000; margin-bottom: 20px; position: relative; width: 280px; margin-left: auto; margin-right: auto; }
+        .ticket h2 { color: #e50914; text-align: center; margin: 0 0 10px 0; border-bottom: 1px solid #eee; }
+        .ticket-info div { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 5px 0; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div class="container" id="main-content">
+    <div class="container">
         <div class="header">
             <div>User: <span id="user-display" style="color:var(--primary); font-weight:bold;"></span></div>
             <button onclick="logout()">Logout</button>
@@ -45,8 +46,9 @@
         <button class="btn-confirm" onclick="confirmBooking()">KONFIRMASI PESANAN</button>
         
         <div id="ticket-controls">
-            <button class="btn-print" onclick="printWithNewWindow()">CETAK KE PDF (ANTI-KOSONG)</button>
-            <button onclick="clearHistory()" style="width:100%; border:none; background:none; color:#888; padding:10px;">Hapus Semua Riwayat</button>
+            <p style="font-size: 12px; color: #aaa;">Klik tombol di bawah untuk simpan tiket ke Galeri HP</p>
+            <button class="btn-download" onclick="downloadAllTickets()">DOWNLOAD SEMUA TIKET (GAMBAR)</button>
+            <button onclick="clearHistory()" style="width:100%; border:none; background:none; color:#888; padding:10px;">Hapus Riwayat</button>
         </div>
 
         <div id="ticket-container"></div>
@@ -78,7 +80,7 @@
 
         async function confirmBooking() {
             const sel = Array.from(document.querySelectorAll(".seat.selected")).map(s => s.dataset.id);
-            if (sel.length === 0) return alert("Pilih kursi dulu!");
+            if (sel.length === 0) return alert("Pilih kursi!");
             const m = document.getElementById("movie-select").value;
             const s = document.getElementById("showtime-select").value;
             
@@ -106,62 +108,37 @@
         function renderTicket(data) {
             const t = document.createElement("div");
             t.className = "ticket";
+            // Beri ID unik agar bisa ditangkap oleh html2canvas
+            t.id = "tkt-" + data.id;
             t.innerHTML = `
-                <input type="checkbox" class="ticket-checkbox" checked>
                 <h2>CINEMA TIX</h2>
                 <div class="ticket-info">
                     <div><strong>Film:</strong><span>${data.movie}</span></div>
                     <div><strong>Jam:</strong><span>${data.time}</span></div>
                     <div><strong>Kursi:</strong><span>${data.seats}</span></div>
                 </div>
-                <div style="text-align:center;font-size:10px;margin-top:8px;">ID: ${data.id}</div>
+                <div style="text-align:center;font-size:10px;margin-top:10px;">ID: ${data.id}</div>
             `;
             document.getElementById("ticket-container").prepend(t);
         }
 
-        // FUNGSI BARU: Solusi khusus untuk HP agar tidak putih/kosong
-        function printWithNewWindow() {
-            const checkboxes = document.querySelectorAll(".ticket-checkbox");
-            let ticketHtml = "";
-            let count = 0;
-
-            checkboxes.forEach((cb) => {
-                if (cb.checked) {
-                    const ticketElement = cb.parentElement.cloneNode(true);
-                    // Hapus checkbox dari tampilan cetak
-                    ticketElement.querySelector(".ticket-checkbox").remove();
-                    // Style khusus untuk lembaran cetak
-                    ticketHtml += `
-                        <div style="background:white; color:black; padding:20px; border:2px solid black; margin-bottom:30px; font-family:sans-serif; width:90%; margin-left:auto; margin-right:auto; page-break-inside:avoid;">
-                            <h1 style="text-align:center; color:#e50914; border-bottom:2px solid #eee; margin:0 0 10px 0;">CINEMA TIX</h1>
-                            <div style="font-size:16px; line-height:1.6;">
-                                ${ticketElement.querySelector(".ticket-info").innerHTML}
-                            </div>
-                            <div style="text-align:center; font-size:12px; margin-top:15px; border-top:1px solid #ccc; padding-top:5px;">
-                                ${ticketElement.querySelector("div:last-child").innerHTML}
-                            </div>
-                        </div>
-                    `;
-                    count++;
-                }
-            });
-
-            if (count === 0) return alert("Pilih tiket yang ingin dicetak!");
-
-            // Buat jendela baru (Metode ini paling stabil di HP)
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                <head><title>Cetak Tiket</title></head>
-                <body onload="window.print();window.close()">
-                    ${ticketHtml}
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
+        // FUNGSI DOWNLOAD: Mengubah Tiket jadi Gambar JPG/PNG
+        async function downloadAllTickets() {
+            const tickets = document.querySelectorAll(".ticket");
+            if (tickets.length === 0) return alert("Tidak ada tiket!");
+            
+            alert("Sedang memproses... Tunggu sebentar.");
+            
+            for (let t of tickets) {
+                const canvas = await html2canvas(t, { scale: 2 });
+                const link = document.createElement("a");
+                link.download = `tiket-${user}-${Math.floor(Math.random()*1000)}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            }
         }
 
-        function clearHistory() { if (confirm("Hapus semua?")) { localStorage.removeItem(`hist_${user}`); location.reload(); } }
+        function clearHistory() { if (confirm("Hapus?")) { localStorage.removeItem(`hist_${user}`); location.reload(); } }
         function logout() { localStorage.clear(); window.location.href = "login.html"; }
 
         loadSeats();
