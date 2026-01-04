@@ -271,11 +271,11 @@
 
         if (sel.length === 0) return alert("Pilih kursi!");
 
-        const res = await fetch("/api/book-seat", {
+      const res = await fetch("/api/book-seat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ movieId: m, seatIds: sel, userName: user, showtime: s }),
-        });
+      });
 
         if (res.ok) {
           const ticketData = {
@@ -348,3 +348,4 @@
     </script>
   </body>
 </html>
+
