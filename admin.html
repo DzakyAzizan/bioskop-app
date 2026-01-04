@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Admin</title>
+    <style>
+      :root {
+        --primary: #e50914;
+        --bg: #0b0b0b;
+        --card: #161616;
+        --text: #fff;
+      }
+      body {
+        font-family: sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 20px;
+      }
+      .card {
+        background: var(--card);
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #333;
+        max-width: 800px;
+        margin: auto;
+      }
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .btn-reset {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 15px;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 100%;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #333;
+        text-align: left;
+      }
+      th {
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+      }
+      .jam-hijau {
+        color: #28a745;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="admin-header">
+        <h2>DAFTAR PEMESANAN</h2>
+        <button type="button" onclick="localStorage.clear(); location.href='login.html'">Logout</button>
+      </div>
+      <button type="button" class="btn-reset" onclick="resetData()">RESET SEMUA DATA</button>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Film</th>
+            <th>Jam</th>
+            <th>Kursi</th>
+          </tr>
+        </thead>
+        <tbody id="admin-table"></tbody>
+      </table>
+    </div>
+    <script>
+      if (localStorage.getItem("userRole") !== "admin") location.href = "login.html";
+      const movieMap = { M1: "Avengers", M2: "Spider-Man", M3: "The Batman", M4: "Ant-Man" };
+      async function loadData() {
+        const res = await fetch("/api/movies");
+        const data = await res.json();
+        document.getElementById("admin-table").innerHTML = data.all_bookings
+          .map(
+            (b) => `
+                <tr><td>${b.user_name}</td><td>${movieMap[b.movie_id] || b.movie_id}</td><td class="jam-hijau">${b.showtime}</td><td>${b.seat_id}</td></tr>
+            `
+          )
+          .join("");
+      }
+      async function resetData() {
+        if (confirm("Reset?")) {
+          await fetch("/api/admin/reset-seats", { method: "POST" });
+          loadData();
+        }
+      }
+      loadData();
+    </script>
+  </body>
+</html>

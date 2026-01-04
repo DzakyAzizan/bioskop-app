@@ -1,0 +1,427 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "123",
+      "role": "admin"
+    },
+    {
+      "username": "jeks",
+      "password": "123",
+      "role": "user"
+    },
+    {
+      "username": "user123",
+      "password": "user123",
+      "role": "user"
+    },
+    {
+      "username": "paljok",
+      "password": "paljok",
+      "role": "user"
+    }
+  ],
+  "bookings": [],
+  "seats": [
+    {
+      "movie_id": "M1",
+      "seat_id": "1",
+      "status": "occupied"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "2",
+      "status": "occupied"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "3",
+      "status": "occupied"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "4",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "5",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "6",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "7",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "8",
+      "status": "occupied"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "9",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "10",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "11",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "12",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "13",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "14",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "15",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "16",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "17",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "18",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "19",
+      "status": "available"
+    },
+    {
+      "movie_id": "M1",
+      "seat_id": "20",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "1",
+      "status": "occupied"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "2",
+      "status": "occupied"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "3",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "4",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "5",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "6",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "7",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "8",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "9",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "10",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "11",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "12",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "13",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "14",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "15",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "16",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "17",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "18",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "19",
+      "status": "available"
+    },
+    {
+      "movie_id": "M2",
+      "seat_id": "20",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "1",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "2",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "3",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "4",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "5",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "6",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "7",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "8",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "9",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "10",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "11",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "12",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "13",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "14",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "15",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "16",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "17",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "18",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "19",
+      "status": "available"
+    },
+    {
+      "movie_id": "M3",
+      "seat_id": "20",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "1",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "2",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "3",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "4",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "5",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "6",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "7",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "8",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "9",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "10",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "11",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "12",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "13",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "14",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "15",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "16",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "17",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "18",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "19",
+      "status": "available"
+    },
+    {
+      "movie_id": "M4",
+      "seat_id": "20",
+      "status": "available"
+    }
+  ]
+}

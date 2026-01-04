@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cinema Tix - Login</title>
+    <style>
+      :root {
+        --primary: #e50914;
+        --bg: #0b0b0b;
+        --card: #161616;
+        --text: #ffffff;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .login-card {
+        background: var(--card);
+        padding: 40px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        width: 300px;
+        text-align: center;
+      }
+      h1 {
+        color: var(--primary);
+        margin-bottom: 25px;
+        letter-spacing: 2px;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        background: #222;
+        border: 1px solid #444;
+        border-radius: 5px;
+        color: white;
+        box-sizing: border-box;
+      }
+      .btn-login {
+        width: 100%;
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .btn-register {
+        width: 100%;
+        background: transparent;
+        color: #aaa;
+        border: 1px solid #444;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <h1>LOGIN</h1>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button class="btn-login" onclick="handleLogin()">MASUK</button>
+      <button class="btn-register" onclick="handleRegister()">Belum punya akun? Daftar</button>
+    </div>
+
+    <script>
+      async function handleLogin() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if (!username || !password) return alert("Isi semua data!");
+
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem("userRole", data.role);
+          localStorage.setItem("userName", data.username);
+          window.location.href = data.role === "admin" ? "admin.html" : "index.html";
+        } else {
+          alert(data.message);
+        }
+      }
+
+      async function handleRegister() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if (!username || !password) return alert("Isi data!");
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        alert(data.message || data.error);
+      }
+    </script>
+  </body>
+</html>
