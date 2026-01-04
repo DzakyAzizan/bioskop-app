@@ -1,337 +1,145 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cinema Tix - Booking</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema Tix - Final</title>
     <style>
-      :root {
-        --primary: #e50914;
-        --bg: #0b0b0b;
-        --card: #161616;
-        --text: #fff;
-      }
-      body {
-        font-family: "Segoe UI", sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        padding: 20px;
-        margin: 0;
-      }
-      .container {
-        max-width: 500px;
-        margin: auto;
-      }
+        :root { --primary: #e50914; --bg: #0b0b0b; --card: #161616; --text: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
+        .container { max-width: 500px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+        .selection-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        select { padding: 12px; background: #222; color: white; border: 1px solid #444; flex: 1; border-radius: 5px; }
+        .grid-seats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
+        .seat { padding: 12px; background: #444; text-align: center; cursor: pointer; border-radius: 4px; }
+        .seat.occupied { background: #1a1a1a; color: #333; cursor: not-allowed; }
+        .seat.selected { background: var(--primary); color: white; }
+        .btn-confirm { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #ticket-controls { display: none; margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        .btn-print { background: #28a745; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 5px; width: 100%; margin-bottom: 10px; font-weight: bold; }
+        .ticket { background: white; color: black; padding: 20px; border-radius: 10px; border: 2px dashed #000; margin-bottom: 20px; position: relative; }
+        .ticket-checkbox { position: absolute; top: 15px; right: 15px; transform: scale(1.5); }
+        .ticket h2 { color: #e50914; text-align: center; margin: 0 0 10px 0; border-bottom: 2px solid #eee; }
+        .ticket-info div { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 5px 0; }
 
-      /* Header */
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--card);
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        border: 1px solid #333;
-      }
-      .user-name {
-        color: var(--primary);
-        font-weight: bold;
-      }
-
-      /* Selections */
-      .selection-group {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-      select {
-        padding: 12px;
-        background: #222;
-        color: white;
-        border: 1px solid #444;
-        flex: 1;
-        border-radius: 5px;
-      }
-
-      /* Seat Grid */
-      .grid-seats {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
-        margin: 20px 0;
-      }
-      .seat {
-        padding: 12px;
-        background: #444;
-        text-align: center;
-        cursor: pointer;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-      .seat.occupied {
-        background: #1a1a1a;
-        color: #333;
-        cursor: not-allowed;
-      }
-      .seat.selected {
-        background: var(--primary);
-        color: white;
-      }
-
-      /* Buttons */
-      .btn-confirm {
-        width: 100%;
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-bottom: 10px;
-      }
-      #ticket-controls {
-        display: none;
-        margin-top: 20px;
-        padding: 15px;
-        background: #222;
-        border-radius: 8px;
-        text-align: center;
-        border: 1px solid #333;
-      }
-      .btn-print-selected {
-        background: #28a745;
-        color: white;
-        border: none;
-        padding: 12px;
-        cursor: pointer;
-        border-radius: 5px;
-        font-weight: bold;
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      .btn-clear {
-        background: #444;
-        color: white;
-        border: none;
-        padding: 8px;
-        width: 100%;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 12px;
-      }
-
-      /* Tiket Tampilan Layar */
-      .ticket {
-        background: white;
-        color: black;
-        padding: 20px;
-        border-radius: 12px;
-        border: 2px dashed #000;
-        margin-bottom: 20px;
-        position: relative;
-      }
-      .ticket-checkbox {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        transform: scale(1.6);
-        cursor: pointer;
-      }
-      .ticket h2 {
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
-        margin-top: 0;
-        color: #e50914;
-        text-align: center;
-      }
-      .ticket-info div {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px dotted #ccc;
-        padding: 5px 0;
-      }
-      .ticket-footer {
-        text-align: center;
-        margin-top: 10px;
-        font-size: 10px;
-        color: #666;
-      }
-
-      /* MEDIA PRINT - Agar 1 Lembar muat 2-3 Tiket Rapi */
-      @media print {
-        body { background: white !important; margin: 0; }
-        body * { visibility: hidden; }
-        #ticket-container, #ticket-container * { visibility: visible; }
-        #ticket-container {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
+        /* PERBAIKAN PRINT HP & LAPTOP */
+        @media print {
+            @page { margin: 0; }
+            body { background: white !important; color: black !important; padding: 0; margin: 0; }
+            /* Sembunyikan semua kecuali tiket yang dipilih */
+            body > *:not(#ticket-container) { display: none !important; }
+            #ticket-container { display: block !important; width: 100% !important; padding: 20px; }
+            .ticket { display: none !important; }
+            .ticket.to-print { 
+                display: block !important; 
+                page-break-inside: avoid !important; 
+                margin: 0 auto 40px auto !important; 
+                width: 85% !important;
+                border: 2px solid #000 !important;
+            }
+            .ticket-checkbox, button { display: none !important; }
         }
-        .ticket {
-          display: none !important; /* Sembunyikan yang tidak dicentang */
-        }
-        .ticket.to-print {
-          display: block !important;
-          visibility: visible !important;
-          page-break-inside: avoid;
-          border: 2px solid #000 !important;
-          margin: 0 auto 40px auto !important; /* Spasi antar tiket */
-          width: 80%;
-          background: white !important;
-        }
-        .ticket-checkbox, button, .header, .selection-group, .btn-confirm, #ticket-controls {
-          display: none !important;
-        }
-      }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="header">
-        <div>User: <span id="user-display" class="user-name"></span></div>
-        <button type="button" onclick="logout()">Logout</button>
-      </div>
-
-      <div class="selection-group">
-        <select id="movie-select" onchange="loadSeats()">
-          <option value="M1">Avengers</option>
-          <option value="M2">Spider-Man</option>
-          <option value="M3">The Batman</option>
-          <option value="M4">Ant-Man</option>
-        </select>
-        <select id="showtime-select" onchange="loadSeats()">
-          <option value="14:00">14:00</option>
-          <option value="17:00">17:00</option>
-          <option value="22:00">22:00</option>
-        </select>
-      </div>
-
-      <div id="seat-container" class="grid-seats"></div>
-      <button type="button" class="btn-confirm" onclick="confirmBooking()">KONFIRMASI PESANAN</button>
-
-      <div id="ticket-controls">
-        <button type="button" class="btn-print-selected" onclick="printSelectedTickets()">CETAK TIKET TERPILIH</button>
-        <button type="button" class="btn-clear" onclick="clearHistory()">HAPUS RIWAYAT TAMPILAN</button>
-      </div>
-
-      <div id="ticket-container"></div>
+        <div class="header">
+            <div>User: <span id="user-display" style="color:var(--primary); font-weight:bold;"></span></div>
+            <button onclick="logout()">Logout</button>
+        </div>
+        <div class="selection-group">
+            <select id="movie-select" onchange="loadSeats()">
+                <option value="M1">Avengers</option><option value="M2">Spider-Man</option>
+                <option value="M3">The Batman</option><option value="M4">Ant-Man</option>
+            </select>
+            <select id="showtime-select" onchange="loadSeats()">
+                <option value="14:00">14:00</option><option value="17:00">17:00</option><option value="22:00">22:00</option>
+            </select>
+        </div>
+        <div id="seat-container" class="grid-seats"></div>
+        <button class="btn-confirm" onclick="confirmBooking()">KONFIRMASI PESANAN</button>
+        <div id="ticket-controls">
+            <button class="btn-print" onclick="printSelected()">CETAK TIKET TERPILIH (PDF)</button>
+            <button onclick="clearHistory()" style="width:100%; font-size:11px;">Hapus Riwayat</button>
+        </div>
+        <div id="ticket-container"></div>
     </div>
 
     <script>
-      const user = localStorage.getItem("userName");
-      if (!user) window.location.href = "login.html";
-      document.getElementById("user-display").innerText = user;
+        const user = localStorage.getItem("userName");
+        if (!user) window.location.href = "login.html";
+        document.getElementById("user-display").innerText = user;
 
-      const movieNames = { M1: "Avengers", M2: "Spider-Man", M3: "The Batman", M4: "Ant-Man" };
-
-      async function loadSeats() {
-        const m = document.getElementById("movie-select").value;
-        const s = document.getElementById("showtime-select").value;
-        try {
-          const res = await fetch(`/api/seats/${m}/${s}`);
-          const seats = await res.json();
-          const container = document.getElementById("seat-container");
-          container.innerHTML = "";
-          seats.forEach((seat) => {
-            const div = document.createElement("div");
-            div.className = `seat ${seat.status}`;
-            div.innerText = seat.seat_id;
-            if (seat.status === "available") div.onclick = () => div.classList.toggle("selected");
-            div.dataset.id = seat.seat_id;
-            container.appendChild(div);
-          });
-        } catch (e) { console.error(e); }
-      }
-
-      async function confirmBooking() {
-        const sel = Array.from(document.querySelectorAll(".seat.selected")).map((s) => s.dataset.id);
-        const m = document.getElementById("movie-select").value;
-        const s = document.getElementById("showtime-select").value;
-
-        if (sel.length === 0) return alert("Pilih kursi!");
-
-        const res = await fetch("/api/book-seat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ movieId: m, seatIds: sel, userName: user, showtime: s }),
-        });
-
-        if (res.ok) {
-          const ticketData = {
-            movie: movieNames[m],
-            time: s,
-            seats: sel.join(", "),
-            id: Math.random().toString(36).substr(2, 9).toUpperCase(),
-          };
-          
-          const history = JSON.parse(localStorage.getItem(`history_${user}`)) || [];
-          history.unshift(ticketData);
-          localStorage.setItem(`history_${user}`, JSON.stringify(history));
-
-          document.getElementById("ticket-controls").style.display = "block";
-          renderTicket(ticketData);
-          loadSeats();
-          alert("Booking Berhasil!");
+        async function loadSeats() {
+            const m = document.getElementById("movie-select").value;
+            const s = document.getElementById("showtime-select").value;
+            try {
+                const res = await fetch(`/api/seats/${m}/${s}`);
+                const seats = await res.json();
+                const container = document.getElementById("seat-container");
+                container.innerHTML = "";
+                seats.forEach(seat => {
+                    const div = document.createElement("div");
+                    div.className = `seat ${seat.status}`;
+                    div.innerText = seat.seat_id;
+                    if (seat.status === "available") div.onclick = () => div.classList.toggle("selected");
+                    div.dataset.id = seat.seat_id;
+                    container.appendChild(div);
+                });
+            } catch (e) { console.error(e); }
         }
-      }
 
-      function renderTicket(data) {
-        const tBox = document.getElementById("ticket-container");
-        const t = document.createElement("div");
-        t.className = "ticket";
-        t.innerHTML = `
-            <input type="checkbox" class="ticket-checkbox" checked>
-            <h2>CINEMA TIX</h2>
-            <div class="ticket-info">
-                <div><strong>Film:</strong> <span>${data.movie}</span></div>
-                <div><strong>Jam:</strong> <span>${data.time}</span></div>
-                <div><strong>Kursi:</strong> <span>${data.seats}</span></div>
-            </div>
-            <div class="ticket-footer">ID: ${data.id}</div>
-        `;
-        tBox.prepend(t);
-      }
-
-      function printSelectedTickets() {
-        const all = document.querySelectorAll(".ticket");
-        let any = false;
-        all.forEach((t) => {
-          if (t.querySelector(".ticket-checkbox").checked) {
-            t.classList.add("to-print");
-            any = true;
-          } else {
-            t.classList.remove("to-print");
-          }
-        });
-        if (!any) return alert("Pilih tiket yang ingin dicetak!");
-        window.print();
-        all.forEach((t) => t.classList.remove("to-print"));
-      }
-
-      function clearHistory() {
-        if (confirm("Hapus riwayat tampilan?")) {
-          localStorage.removeItem(`history_${user}`);
-          document.getElementById("ticket-container").innerHTML = "";
-          document.getElementById("ticket-controls").style.display = "none";
+        async function confirmBooking() {
+            const sel = Array.from(document.querySelectorAll(".seat.selected")).map(s => s.dataset.id);
+            if (sel.length === 0) return alert("Pilih kursi!");
+            const m = document.getElementById("movie-select").value;
+            const s = document.getElementById("showtime-select").value;
+            const res = await fetch("/api/book-seat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ movieId: m, seatIds: sel, userName: user, showtime: s })
+            });
+            if (res.ok) {
+                const data = { movie: document.getElementById("movie-select").options[document.getElementById("movie-select").selectedIndex].text, time: s, seats: sel.join(", "), id: Math.random().toString(36).substr(2, 7).toUpperCase() };
+                saveHistory(data);
+                renderTicket(data);
+                loadSeats();
+                document.getElementById("ticket-controls").style.display = "block";
+                alert("Berhasil!");
+            }
         }
-      }
 
-      function logout() {
-        localStorage.clear();
-        window.location.href = "login.html";
-      }
+        function renderTicket(data) {
+            const t = document.createElement("div");
+            t.className = "ticket";
+            t.innerHTML = `<input type="checkbox" class="ticket-checkbox" checked><h2>CINEMA TIX</h2><div class="ticket-info"><div><strong>Film:</strong><span>${data.movie}</span></div><div><strong>Jam:</strong><span>${data.time}</span></div><div><strong>Kursi:</strong><span>${data.seats}</span></div></div><div style="text-align:center;font-size:10px;margin-top:10px;">ID: ${data.id}</div>`;
+            document.getElementById("ticket-container").prepend(t);
+        }
 
-      // Load awal
-      loadSeats();
-      const history = JSON.parse(localStorage.getItem(`history_${user}`)) || [];
-      if (history.length > 0) {
-        document.getElementById("ticket-controls").style.display = "block";
-        history.forEach(renderTicket);
-      }
+        function saveHistory(data) {
+            const history = JSON.parse(localStorage.getItem(`hist_${user}`)) || [];
+            history.unshift(data);
+            localStorage.setItem(`hist_${user}`, JSON.stringify(history));
+        }
+
+        function printSelected() {
+            const tickets = document.querySelectorAll(".ticket");
+            let any = false;
+            tickets.forEach(t => {
+                if (t.querySelector(".ticket-checkbox").checked) { t.classList.add("to-print"); any = true; }
+                else { t.classList.remove("to-print"); }
+            });
+            if (!any) return alert("Centang tiket dulu!");
+            window.print();
+        }
+
+        function clearHistory() { if (confirm("Hapus?")) { localStorage.removeItem(`hist_${user}`); location.reload(); } }
+        function logout() { localStorage.clear(); window.location.href = "login.html"; }
+
+        loadSeats();
+        (JSON.parse(localStorage.getItem(`hist_${user}`)) || []).forEach(renderTicket);
+        if ((JSON.parse(localStorage.getItem(`hist_${user}`)) || []).length > 0) document.getElementById("ticket-controls").style.display = "block";
     </script>
-  </body>
+</body>
 </html>
